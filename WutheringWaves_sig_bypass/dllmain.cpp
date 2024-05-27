@@ -4,12 +4,10 @@
 #include <tchar.h>
 #include "HookManager.h"
 
-
 #define DO_APP_FUNC(a, r, n, p)  r (*n) p
 DO_APP_FUNC(0x3CD3FC0, __int64, BroadcastPakChunkSignatureCheckFailure, (__int64 a1, __int64 a2));
 DO_APP_FUNC(0x3CD4670, bool, FileCheck, (__int64 a1));
 #undef DO_APP_FUNC
-
 
 uint8_t* GameBase = (uint8_t*)GetModuleHandleA(0);
 
@@ -17,10 +15,12 @@ __int64 BroadcastPakChunkSignatureCheckFailure_Hook(__int64 a1, __int64 a2)
 {
     return 1;
 }
-bool FileCheck_Hook(__int64 a1)
+
+bool FileCheck_Hook(__int64 a1) //这里游戏会对文件进行检查，直接返回true即可.
 {
     return true;
 }
+
 bool sigCheck_bypass()
 {
     DWORD oldProtect;
@@ -35,7 +35,7 @@ bool sigCheck_bypass()
     }
     if (address[0] == 0x90)
     {
-        if (address[1] = 0x90)
+        if (address[1] == 0x90)
         {
             return true;
         }
@@ -43,6 +43,7 @@ bool sigCheck_bypass()
     }
     return false;
 }
+
 void init_static_offsets()
 {
     uint8_t* baseAddress = (uint8_t*)GetModuleHandleA(0);
@@ -59,6 +60,7 @@ void BaseHook()
     HookManager::install(BroadcastPakChunkSignatureCheckFailure, BroadcastPakChunkSignatureCheckFailure_Hook);
     HookManager::install(FileCheck, FileCheck_Hook);
 }
+
 DWORD WINAPI MyThreadFunction(LPVOID lpParam)
 {
     Sleep(2500);
@@ -75,6 +77,7 @@ DWORD WINAPI MyThreadFunction(LPVOID lpParam)
     sigCheck_bypass();
     return 0;
 }
+
 HWND StartConsole(LPCWSTR title, bool close) {
     HANDLE g_hOutput = 0;
     HWND hwnd = NULL;
@@ -92,6 +95,7 @@ HWND StartConsole(LPCWSTR title, bool close) {
     freopen_s((FILE**)stderr, "CONOUT$", "w", stderr);
     return hwnd;
 }
+
 BOOL APIENTRY DllMain( HMODULE hModule,
                        DWORD  ul_reason_for_call,
                        LPVOID lpReserved
