@@ -21,6 +21,7 @@ bool FileCheck_Hook(__int64 a1) //这里游戏会对文件进行检查，直接�
     return true;
 }
 
+// bool FChunkCacheWorker::CheckSignature
 bool sigCheck_bypass()
 {
     DWORD oldProtect;
